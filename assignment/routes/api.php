@@ -31,6 +31,8 @@ Route::group([
     //logout route
     Route::get("/logout", [ApiController::class, "logout"]);
 
-    
+    //add items
+    Route::post('/additems', [ApiController::class, 'addItems']);
+
 
 });

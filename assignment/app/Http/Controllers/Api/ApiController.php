@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Item;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Task;
@@ -109,6 +110,42 @@ class ApiController extends Controller
     }
     //logout end 
 
+    //add items
+    public function addItems(Request $request){  
+
+        if(Auth::user()->type == 'Owner'){
+            $request->validate([
+                'item_name' => ['required', 'max:255', 'unique:items'],
+                'description' => ['required'],
+                'manufacturer' => ['required'],
+                'unit_price' => ['required','numeric', 'min:0'],
+                'quantity_in_stock' => ['required','integer', 'min:0'],
+            ]);
+      
+            Item::create([
+                'item_name' => $request->item_name,
+                'description' => $request->description,
+                'manufacturer' => $request->manufacturer,
+                'unit_price' => $request->unit_price,
+                'quantity_in_stock' => $request->quantity_in_stock
+            ]);
+
+            $data = Item::all();
+
+            return response() -> json([
+                'status' => true,
+                'message' => 'Item added successfully',
+                'data' => $data
+            ]);
+
+        }else{
+            return response() -> json([
+                'status' => false,
+                'message' => 'Unauthorized access'
+            ]);
+        }
+
+    }
 
 
 }
