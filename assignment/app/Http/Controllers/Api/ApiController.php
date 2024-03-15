@@ -146,6 +146,76 @@ class ApiController extends Controller
         }
 
     }
+    //add items end
+
+    //edit items
+    public function editItems(Request $request, $id){
+        $item = Item::find($id);
+
+        if(!$item){
+            return response() -> json([
+                'status' => false,
+                'message' => 'Item not found'
+            ]);
+        }else{
+            if(Auth::user()->type == 'Owner' || Auth::user()->type == 'Cashier'){
+                
+                $request->validate([
+                    'item_name' => ['required', 'max:255', 'unique:items'],
+                    'description' => ['required'],
+                    'manufacturer' => ['required'],
+                    'unit_price' => ['required','numeric', 'min:0'],
+                    'quantity_in_stock' => ['required','integer', 'min:0'],
+                ]);
+                
+                $item->update([
+                    'item_name' => $request->item_name,
+                    'description' => $request->description,
+                    'manufacturer' => $request->manufacturer,
+                    'unit_price' => $request->unit_price,
+                    'quantity_in_stock' => $request->quantity_in_stock
+                ]);
+                
+                $data = Item::all();
+                return response() -> json([
+                    'status' => true,
+                    'message' => 'Item added successfully',
+                    'data' => $data
+                ]);
+            }else{
+                return response() -> json([
+                    'status' => false,
+                    'message' => 'Unauthorized access'
+                ]);
+            }
+        }
+    }
+    //edit items end
+
+    //delete items
+    public function deleteItems(Request $request, $id){
+        $item = Item::find($id);
+        if(!$item){
+            return response() -> json([
+                'status' => false,
+                'message' => 'Item not found'
+            ]);
+        }else{
+            if(Auth::user()->type == 'Owner' || Auth::user()->type == 'Cashier'){
+                $item->delete();
+                return response() -> json([
+                    'status' => true,
+                    'message' => 'Item deleted successfully'
+                ]);
+            }else{
+                return response() -> json([
+                    'status' => false,
+                    'message' => 'Unauthorized access'
+                ]);
+            }
+        }
+    }
+    //delete items end
 
 
 }
