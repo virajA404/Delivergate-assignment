@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\Item;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -179,7 +180,7 @@ class ApiController extends Controller
                 $data = Item::all();
                 return response() -> json([
                     'status' => true,
-                    'message' => 'Item added successfully',
+                    'message' => 'Item details updated successfully',
                     'data' => $data
                 ]);
             }else{
@@ -217,5 +218,113 @@ class ApiController extends Controller
     }
     //delete items end
 
+    //add customers
+    public function addCustomers(Request $request){
 
+        if(Auth::user()->type == 'Owner'){
+            $request->validate([
+                'customer_name' => ['required', 'max:255', 'unique:customers'],
+                'email' => ['required','email', 'unique:customers'],
+                'phone' => ['required','string', 'max:20'],
+                'address' => ['required','string'],
+            ]);
+
+            Customer::create([
+                'customer_name' => $request->customer_name,
+                'email' => $request->email,
+                'manufacturer' => $request->manufacturer,
+                'phone' => $request->phone,
+                'address' => $request->address
+            ]);
+
+            $data = Customer::all();
+
+            return response() -> json([
+                'status' => true,
+                'message' => 'Customer details added successfully',
+                'data' => $data
+            ]);
+        }else{
+            return response() -> json([
+                'status' => false,
+                'message' => 'Unauthorized access'
+            ]);
+        }
+    }
+    //add customers end
+
+    //edit customer details
+    public function editCustomer(Request $request, $id){
+
+        $customer = Customer::find($id);
+
+        if(!$customer){
+            return response() -> json([
+                'status' => false,
+                'message' => 'Customer not found'
+            ]);
+        }else{
+            if(Auth::user()->type == 'Owner' || Auth::user()->type == 'Manager'){
+                
+                $request->validate([
+                    'customer_name' => ['required', 'max:255', 'unique:customers'],
+                    'email' => ['required','email', 'unique:customers'],
+                    'phone' => ['required','string', 'max:20'],
+                    'address' => ['required','string'],
+                ]);
+    
+                $customer->update([
+                    'customer_name' => $request->customer_name,
+                    'email' => $request->email,
+                    'manufacturer' => $request->manufacturer,
+                    'phone' => $request->phone,
+                    'address' => $request->address
+                ]);
+                
+                $data = Customer::all();
+                return response() -> json([
+                    'status' => true,
+                    'message' => 'Customer details updated successfully',
+                    'data' => $data
+                ]);
+            }else{
+                return response() -> json([
+                    'status' => false,
+                    'message' => 'Unauthorized access'
+                ]);
+            }
+        }
+
+    }
+    //edit customer details end
+
+    //delete customer details
+    public function deleteCustomer(Request $request, $id){
+
+        $customer = Customer::find($id);
+
+        if(!$customer){
+            return response() -> json([
+                'status' => false,
+                'message' => 'Customer not found'
+            ]);
+        }else{
+            if(Auth::user()->type == 'Owner' || Auth::user()->type == 'Manager'){
+                
+                $customer->delete();
+
+                return response() -> json([
+                    'status' => true,
+                    'message' => 'Customer details deleted successfully',
+                ]);
+            }else{
+                return response() -> json([
+                    'status' => false,
+                    'message' => 'Unauthorized access'
+                ]);
+            }
+        }
+
+    }
+    //delete customer details end
 }
