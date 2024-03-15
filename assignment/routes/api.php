@@ -34,5 +34,11 @@ Route::group([
     //add items
     Route::post('/additems', [ApiController::class, 'addItems']);
 
+    //edit items
+    Route::post('/edititems/{id}', [ApiController::class, 'editItems']);
 
+    //delete items
+    Route::get('/deleteitems/{id}', [ApiController::class, 'deleteItems']);
+
+    
 });
