@@ -40,5 +40,12 @@ Route::group([
     //delete items
     Route::get('/deleteitems/{id}', [ApiController::class, 'deleteItems']);
 
-    
+    //add customers
+    Route::post('/addcustomers', [ApiController::class, 'addCustomers']);
+
+    //edit customer details
+    Route::post('/editcustomer/{id}', [ApiController::class, 'editCustomer']);
+
+    //delete customer details
+    Route::get('/deletecustomer/{id}', [ApiController::class, 'deleteCustomer']);
 });
