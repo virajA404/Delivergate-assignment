@@ -19,6 +19,18 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+//register route
 Route::post("register", [ApiController::class, "saveRegister"]);
 
+//login route
 Route::post("login", [ApiController::class, "loginAction"]);
+
+Route::group([
+    'middleware' => ['auth:sanctum']
+], function () {
+    //logout route
+    Route::get("/logout", [ApiController::class, "logout"]);
+
+    
+
+});
